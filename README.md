@@ -25,5 +25,5 @@ WHY SHOULD I USE IT (WHEN IT COMES OUT)?
 HOW CAN I CONTRIBUTE?
   A preprocessor would be nice :). But no, I'm not yet accepting any
   contributions at this stage. Once the back-end is complete work will start
-  on a preprocesor and then I'll be accepting contributions. Be patient,
+  on a preprocessor and then I'll be accepting contributions. Be patient,
   young paladin!
