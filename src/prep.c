@@ -1,5 +1,19 @@
 /*
- * prep.c - The preprocessor.
+ *   prep.c - Contains the preprocessor passes needed.
+ *  Copyright (C) 2014  Thijs van der Woude
+
+ *  This program is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #include <stdio.h>
@@ -67,8 +81,13 @@ int prep_pass3(char *input, char *output){
 		if(string[0] == '.'){
 			// If it's a comment directive:
 			if(string[1] == 'c'){
-				comment_char = string[10];
-				print++;
+				if(string[10]=='.'){
+					printf("mas86: invalid comment char\n");
+				}
+				else{
+					comment_char = string[10];
+					print++;
+				}
 			}
 			if(string[3] == 's'){
 				string[7] = '\n';
