@@ -1,4 +1,9 @@
 mas86
-=====
+====
+Maza Assembler for x86
 
-Better README coming soon.
+Description:
+    A new assembler for x86 (and later x64) CPUs, written especially for the Maza project. The Maza project is a project to write a complete operating system from scratch, with as little or no GNU or BSD code involved in the releases of the operating system.
+
+How to install:
+    *** still needs to be added ***
