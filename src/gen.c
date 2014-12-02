@@ -50,13 +50,18 @@ int gen(char *input, char *output, char *map){
 				fputc(val, target);
 			}
 			else if(strcmp(string, ".hex\n")==0){
+				fgets(string, sizeof(string), source);
+				int lastchar = string_length(string);
+				int x = 0;
 				int val;
-				fscanf(source, "%x", &val);
-				if(val<256){
+				char hex[1];
+				while(x<=lastchar && lastchar-x != 2){
+					hex[0] = string[lastchar-2-x];
+					hex[1] = string[lastchar-1-x];
+					printf("%s\n", hex);
+					sscanf(hex, "%x", &val);
 					fputc(val, target);
-				}
-				else{
-					printf("can't do this yet\n");
+					x = x+2;
 				}
 			}
 			else if(strcmp(string, ".org\n")==0){
@@ -359,7 +364,7 @@ int gen(char *input, char *output, char *map){
 			}
 		}
 	}
-	printf("%d\n", origin);
+	// printf("%d\n", origin);
 	fclose(source);
 	fclose(target);
 }
