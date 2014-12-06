@@ -35,13 +35,171 @@ int gen(char *input, char *output, char *map){
 		if(string[0]=='.'){
 			if(strcmp(string, ".ascii\n")==0){
 				fgets(string, sizeof(string), source);
-				token = strtok(string, "\n\0");
-				fprintf(target, "%s", token);
+				int i = 0;
+				while(string[i] != '\n'){
+					if(string[i]=='\\'){
+						i++;
+						// Bell character.
+						if(string[i]=='a'){
+							fputc('\a', target);
+							i++;
+						}
+						// Backspace.
+						else if(string[i]=='b'){
+							fputc('\b', target);
+							i++;
+						}
+						// GCC escape character (not in the C standard, so for portability this uses the actual value).
+						else if(string[i]=='e'){
+							fputc(27, target);
+							i++;
+						}
+						// Form character.
+						else if(string[i]=='f'){
+							fputc('\f', target);
+							i++;
+						}
+						// Newline.
+						else if(string[i]=='n'){
+							fputc('\n', target);
+							i++;
+						}
+						// Carriage return.
+						else if(string[i]=='r'){
+							fputc('\r', target);
+							i++;
+						}
+						// Horizontal tab.
+						else if(string[i]=='t'){
+							fputc('\t', target);
+							i++;
+						}
+						// Vertical tab.
+						else if(string[i]=='v'){
+							fputc('\v', target);
+							i++;
+						}
+						// Backslash.
+						else if(string[i]=='\\'){
+							fputc('\\', target);
+							i++;
+						}
+						// Single quotation mark.
+						else if(string[i]=='\''){
+							fputc('\'', target);
+							i++;
+						}
+						// Double quotation mark.
+						else if(string[i]=='\"'){
+							fputc('\"', target);
+							i++;
+						}
+						// Question mark.
+						else if(string[i]=='\?'){
+							fputc('\?', target);
+							i++;
+						}
+						// Null.
+						else if(string[i]=='0'){
+							fputc('\0', target);
+							i++;
+						}
+						else{
+							printf("unknown escape char\n");
+						}
+					}
+					else if(string[i]=='\"'){
+						i++;
+					}
+					else{
+						fputc(string[i], target);
+						i++;
+					}
+				}
 			}
 			else if(strcmp(string, ".asciz\n")==0){
 				fgets(string, sizeof(string), source);
-				token = strtok(string, "\n\0");
-				fprintf(target, "%s", token);
+				int i = 0;
+				while(string[i] != '\n'){
+					if(string[i]=='\\'){
+						i++;
+						// Bell character.
+						if(string[i]=='a'){
+							fputc('\a', target);
+							i++;
+						}
+						// Backspace.
+						else if(string[i]=='b'){
+							fputc('\b', target);
+							i++;
+						}
+						// GCC escape character (not in the C standard, so for portability this uses the actual value).
+						else if(string[i]=='e'){
+							fputc(27, target);
+							i++;
+						}
+						// Form character.
+						else if(string[i]=='f'){
+							fputc('\f', target);
+							i++;
+						}
+						// Newline.
+						else if(string[i]=='n'){
+							fputc('\n', target);
+							i++;
+						}
+						// Carriage return.
+						else if(string[i]=='r'){
+							fputc('\r', target);
+							i++;
+						}
+						// Horizontal tab.
+						else if(string[i]=='t'){
+							fputc('\t', target);
+							i++;
+						}
+						// Vertical tab.
+						else if(string[i]=='v'){
+							fputc('\v', target);
+							i++;
+						}
+						// Backslash.
+						else if(string[i]=='\\'){
+							fputc('\\', target);
+							i++;
+						}
+						// Single quotation mark.
+						else if(string[i]=='\''){
+							fputc('\'', target);
+							i++;
+						}
+						// Double quotation mark.
+						else if(string[i]=='\"'){
+							fputc('\"', target);
+							i++;
+						}
+						// Question mark.
+						else if(string[i]=='\?'){
+							fputc('\?', target);
+							i++;
+						}
+						// Null.
+						else if(string[i]=='0'){
+							fputc('\0', target);
+							i++;
+						}
+						else{
+							printf("unknown escape char\n");
+						}
+					}
+					else if(string[i]=='\"'){
+						i++;
+					}
+					else{
+						fputc(string[i], target);
+						i++;
+					}
+				}
 				fputc(0, target);
 			}
 			else if(strcmp(string, ".dec\n")==0){
@@ -51,17 +209,28 @@ int gen(char *input, char *output, char *map){
 			}
 			else if(strcmp(string, ".hex\n")==0){
 				fgets(string, sizeof(string), source);
-				int lastchar = string_length(string);
+				int lastchar = strlen(string);
 				int x = 0;
 				int val;
 				char hex[1];
-				while(x<=lastchar && lastchar-x != 2){
-					hex[0] = string[lastchar-2-x];
-					hex[1] = string[lastchar-1-x];
-					printf("%s\n", hex);
-					sscanf(hex, "%x", &val);
-					fputc(val, target);
-					x = x+2;
+				if(string[lastchar-2]=='h'){
+					lastchar -= 2;
+					while(x<=lastchar && lastchar-x != 0){
+						hex[0] = string[lastchar-2-x];
+						hex[1] = string[lastchar-1-x];
+						sscanf(hex, "%x", &val);
+						fputc(val, target);
+						x = x+2;
+					}
+				}
+				else{
+					while(x<=lastchar && lastchar-x >= 4){
+						hex[0] = string[lastchar-3-x];
+						hex[1] = string[lastchar-2-x];
+						sscanf(hex, "%x", &val);
+						fputc(val, target);
+						x = x+2;
+					}
 				}
 			}
 			else if(strcmp(string, ".org\n")==0){
@@ -151,7 +320,7 @@ int gen(char *input, char *output, char *map){
 						printf("can't do this yet\n");
 					}
 				}
-				if(strcmp(string, "al\n")==0){
+				else if(strcmp(string, "al\n")==0){
 					fputc(176, target);
 					fgets(string, sizeof(string), source);
 					if(string[0]=='0' || string[0]=='1' || string[0]=='2' || string[0]=='3' || string[0]=='4' || string[0]=='5' \
@@ -172,7 +341,32 @@ int gen(char *input, char *output, char *map){
 				}
 				else if(strcmp(string, "ax\n")==0){
 					fgets(string, sizeof(string), source);
-					if(string[0]=='0' || string[0]=='1' || string[0]=='2' || string[0]=='3' || string[0]=='4' || string[0]=='5' \
+					int lastchar = strlen(string);
+					int x = 0;
+					int val;
+					char hex[1];
+					if(string[0]=='0' && string[1]=='x'){
+						fputc(184, target);
+						while(x<=lastchar && lastchar-x >= 4){
+							hex[0] = string[lastchar-3-x];
+							hex[1] = string[lastchar-2-x];
+							sscanf(hex, "%x", &val);
+							fputc(val, target);
+							x = x+2;
+						}
+					}
+					else if(string[lastchar-2]=='h'){
+						fputc(184, target);
+						lastchar -= 2;
+						while(x<=lastchar && lastchar-x != 0){
+							hex[0] = string[lastchar-2-x];
+							hex[1] = string[lastchar-1-x];
+							sscanf(hex, "%x", &val);
+							fputc(val, target);
+							x = x+2;
+						}
+					}
+					else if(string[0]=='0' || string[0]=='1' || string[0]=='2' || string[0]=='3' || string[0]=='4' || string[0]=='5' \
 					|| string[0]=='6' || string[0]=='7' || string[0]=='8' || string[0]=='9'){
 						fputc(184, target);
 						val = atoi(string);
@@ -181,7 +375,30 @@ int gen(char *input, char *output, char *map){
 							fputc(0, target);
 						}
 						else{
-							printf("cant do this yet\n");
+							sprintf(string, "%x", val);
+							int lastchar = strlen(string);
+							int x = 0;
+							int val;
+							char hex[1];
+							if(lastchar==3){
+								hex[0] = string[lastchar-2];
+								hex[1] = string[lastchar-1];
+								sscanf(hex, "%x", &val);
+								fputc(val, target);
+								hex[0] = ' ';
+								hex[1] = string[lastchar-3];
+								sscanf(hex, "%x", &val);
+								fputc(val, target);
+							}
+							else{
+								while(x<=lastchar && lastchar-x >= 2){
+									hex[0] = string[lastchar-2-x];
+									hex[1] = string[lastchar-1-x];
+									sscanf(hex, "%x", &val);
+									fputc(val, target);
+									x = x+2;
+								}
+							}
 						}
 					}
 					else{
@@ -205,28 +422,78 @@ int gen(char *input, char *output, char *map){
 					if(string[0]=='0' || string[0]=='1' || string[0]=='2' || string[0]=='3' || string[0]=='4' || string[0]=='5' \
 					|| string[0]=='6' || string[0]=='7' || string[0]=='8' || string[0]=='9'){
 						fputc(187, target);
-						val = atoi(string);
-						if(val<256){
-							fputc(val, target);
-							fputc(0, target);
+						fgets(string, sizeof(string), source);
+						int lastchar = strlen(string);
+						int x = 0;
+						int val;
+						char hex[1];
+						if(string[1]=='x'){
+							while(x<=lastchar && lastchar-x >= 4){
+								hex[0] = string[lastchar-3-x];
+								hex[1] = string[lastchar-2-x];
+								sscanf(hex, "%x", &val);
+								fputc(val, target);
+								x = x+2;
+							}
+						}
+						else if(string[lastchar-2]=='h'){
+							lastchar -= 2;
+							while(x<=lastchar && lastchar-x != 0){
+								hex[0] = string[lastchar-2-x];
+								hex[1] = string[lastchar-1-x];
+								sscanf(hex, "%x", &val);
+								fputc(val, target);
+								x = x+2;
+							}
+						}
+						else if(string[0]=='0' || string[0]=='1' || string[0]=='2' || string[0]=='3' || string[0]=='4' || string[0]=='5' \
+						|| string[0]=='6' || string[0]=='7' || string[0]=='8' || string[0]=='9'){
+							val = atoi(string);
+							if(val<256){
+								fputc(val, target);
+								fputc(0, target);
+							}
+							else{
+								sprintf(string, "%x", val);
+								int lastchar = strlen(string);
+								int x = 0;
+								int val;
+								char hex[1];
+								if(lastchar==3){
+									hex[0] = string[lastchar-2];
+									hex[1] = string[lastchar-1];
+									sscanf(hex, "%x", &val);
+									fputc(val, target);
+									hex[0] = ' ';
+									hex[1] = string[lastchar-3];
+									sscanf(hex, "%x", &val);
+									fputc(val, target);
+								}
+								else{
+									while(x<=lastchar && lastchar-x >= 2){
+										hex[0] = string[lastchar-2-x];
+										hex[1] = string[lastchar-1-x];
+										sscanf(hex, "%x", &val);
+										fputc(val, target);
+										x = x+2;
+									}
+								}
+							}
 						}
 						else{
-							printf("cant do this yet\n");
-						}
-					}
-					else{
-						fputc(137, target);
-						if(strcmp(string, "ax\n")==0){
-							fputc(195, target);
-						}
-						if(strcmp(string, "bx\n")==0){
-							fputc(219, target);
-						}
-						if(strcmp(string, "cx\n")==0){
-							fputc(203, target);
-						}
-						if(strcmp(string, "dx\n")==0){
-							fputc(211, target);
+							fputc(137, target);
+							if(strcmp(string, "ax\n")==0){
+								fputc(195, target);
+							}
+							if(strcmp(string, "bx\n")==0){
+								fputc(219, target);
+							}
+							if(strcmp(string, "cx\n")==0){
+								fputc(203, target);
+							}
+							if(strcmp(string, "dx\n")==0){
+								fputc(211, target);
+							}
 						}
 					}
 				}
@@ -241,7 +508,30 @@ int gen(char *input, char *output, char *map){
 							fputc(0, target);
 						}
 						else{
-							printf("cant do this yet\n");
+							sprintf(string, "%x", val);
+							int lastchar = strlen(string);
+							int x = 0;
+							int val;
+							char hex[1];
+							if(lastchar==3){
+								hex[0] = string[lastchar-2];
+								hex[1] = string[lastchar-1];
+								sscanf(hex, "%x", &val);
+								fputc(val, target);
+								hex[0] = ' ';
+								hex[1] = string[lastchar-3];
+								sscanf(hex, "%x", &val);
+								fputc(val, target);
+							}
+							else{
+								while(x<=lastchar && lastchar-x >= 2){
+									hex[0] = string[lastchar-2-x];
+									hex[1] = string[lastchar-1-x];
+									sscanf(hex, "%x", &val);
+									fputc(val, target);
+									x = x+2;
+								}
+							}
 						}
 					}
 					else{
@@ -271,7 +561,30 @@ int gen(char *input, char *output, char *map){
 							fputc(0, target);
 						}
 						else{
-							printf("cant do this yet\n");
+							sprintf(string, "%x", val);
+							int lastchar = strlen(string);
+							int x = 0;
+							int val;
+							char hex[1];
+							if(lastchar==3){
+								hex[0] = string[lastchar-2];
+								hex[1] = string[lastchar-1];
+								sscanf(hex, "%x", &val);
+								fputc(val, target);
+								hex[0] = ' ';
+								hex[1] = string[lastchar-3];
+								sscanf(hex, "%x", &val);
+								fputc(val, target);
+							}
+							else{
+								while(x<=lastchar && lastchar-x >= 2){
+									hex[0] = string[lastchar-2-x];
+									hex[1] = string[lastchar-1-x];
+									sscanf(hex, "%x", &val);
+									fputc(val, target);
+									x = x+2;
+								}
+							}
 						}
 					}
 					else{
