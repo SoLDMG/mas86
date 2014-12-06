@@ -19,7 +19,7 @@
 #include <stdio.h>
 #include <string.h>
 
-#define SEPERATORS "\t\n\""
+#define SEPERATORS "\t\n"
 #define STD_COMMENT '!'
 
 // Does some basic tokenizing, needed for the preprocessing.
@@ -81,7 +81,7 @@ int prep_pass3(char *input, char *output){
 		if(string[0] == '.'){
 			// If it's a comment directive:
 			if(string[1] == 'c'){
-				if(string[10]=='.'){
+				if(string[10]=='.' || string[10]==','){
 					printf("mas86: invalid comment char\n");
 				}
 				else{
@@ -103,6 +103,9 @@ int prep_pass3(char *input, char *output){
 			}
 			if(string[2] == 'e'){
 				string[4] = '\n';
+			}
+			if(string[1] == 'a'){
+				string[7] = '\n';
 			}
 		}
 		// If it's a comment:
